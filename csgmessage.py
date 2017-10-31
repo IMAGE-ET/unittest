@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import json
 import uuid
 from enum import Enum
@@ -5,7 +6,11 @@ from enum import Enum
 #Bussiness ID Def
 class BussinessID(Enum):
     login = 1
+    get_config = 2
+    notify_progress = 3
     query_patient = 4
+    progress = 6
+    analyze_study = 7
     register_user = 9
     modify_password = 10
 
@@ -14,7 +19,7 @@ class BussinessID(Enum):
 class CsgMessageBase(object):
     def __init__(self):
         self.vendor_id = "csg_client"
-        self.uid = uuid.uuid1()
+        self.uid = str(uuid.uuid1())
         self.business_id = 0
         self.status = 0
         self.in_version = "1.0.0.1"
@@ -43,6 +48,33 @@ class CsgQueryPatientMessage(CsgMessageBase):
     def __init__(self):
         super().__init__()
         self.business_id = BussinessID.query_patient.value
+
+class CsgAnalyzeStudyMessage(CsgMessageBase):
+    def __init__(self):
+        super().__init__()
+        self.business_id = BussinessID.query_patient.value
+
+class CsgNotifyProgressMessage(CsgMessageBase):
+    def __init__(self):
+        super().__init__()
+        self.business_id = BussinessID.notify_progress.value
+        self.data = {"publicid":"","progress":""}
+
+class CsgGetFudanConfigMessage(CsgMessageBase):
+    def __init__(self):
+        super().__init__()
+        self.vendor_id = "fd_plugin"
+        self.business_id = BussinessID.get_config.value
+        self.message = "获取配置信息"
+        self.data = {"context":""}
+
+class CsgProgressMessage(CsgMessageBase):
+    def __init__(self):
+        super().__init__()
+        self.vendor_id = "fd_plugin"
+        self.business_id = BussinessID.progress.value
+        self.message = "进度信息"
+        self.data = {"publicid":"","progress":0}
 
 class MyJSONEncoder(json.JSONEncoder):
     def default(self, obj):
