@@ -3,19 +3,19 @@ import json
 import uuid
 from enum import Enum
 
-#Bussiness ID Def
+# region Bussiness ID
 class BussinessID(Enum):
     login = 1
     get_config = 2
     notify_progress = 3
     query_patient = 4
     progress = 6
-    analyze_study = 7
+    analyze_study_report = 7
     register_user = 9
     modify_password = 10
+# endregion
 
-
-#Message Def
+# region Base Message
 class CsgMessageBase(object):
     def __init__(self):
         self.vendor_id = "csg_client"
@@ -25,6 +25,7 @@ class CsgMessageBase(object):
         self.in_version = "1.0.0.1"
         self.out_version = "1.0.0.1"
         self.message = "defaultmsg"
+# endregion
 
 class CsgRegisterMessage(CsgMessageBase):
     def __init__(self):
@@ -49,10 +50,11 @@ class CsgQueryPatientMessage(CsgMessageBase):
         super().__init__()
         self.business_id = BussinessID.query_patient.value
 
-class CsgAnalyzeStudyMessage(CsgMessageBase):
-    def __init__(self):
-        super().__init__()
-        self.business_id = BussinessID.query_patient.value
+# class CsgAnalyzeStudyMessage(CsgMessageBase):
+#     def __init__(self):
+#         super().__init__()
+#         self.business_id = BussinessID.query_patient.value
+#         self.data = {"publicid": "", "progress": ""}
 
 class CsgNotifyProgressMessage(CsgMessageBase):
     def __init__(self):
@@ -75,6 +77,14 @@ class CsgProgressMessage(CsgMessageBase):
         self.business_id = BussinessID.progress.value
         self.message = "进度信息"
         self.data = {"publicid":"","progress":0}
+
+class CsgReportMessage(CsgMessageBase):
+    def __init__(self):
+        super().__init__()
+        self.vendor_id = "fd_plugin"
+        self.business_id = BussinessID.analyze_study_report.value
+        self.message = "分析报告"
+        self.data = {"publicid":"","file":"","context":""}
 
 class MyJSONEncoder(json.JSONEncoder):
     def default(self, obj):

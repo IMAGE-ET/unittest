@@ -9,7 +9,9 @@ import time
 # from Orthanc import OrthancTestCase
 from msgcenter import MsgcenterTestCase
 import asyncio
-
+from gevent import monkey; monkey.patch_socket()
+import gevent
+import urllib
 
 class Test(object):
     def __call__(self, *args, **kwargs):
@@ -114,7 +116,18 @@ async def hello():
     r = await asyncio.sleep(1)
     print("Hello again!")
 
+def f(url):
+    print('GET: %s' % url)
+    resp = urllib.request.urlopen(url)
+    data = resp.read()
+    print('%d bytes received from %s.' % (len(data), url))
+
 if __name__ == "__main__":
+    gevent.joinall([
+        gevent.spawn(f, 'https://www.python.org/'),
+        gevent.spawn(f, 'https://www.yahoo.com/'),
+        gevent.spawn(f, 'https://github.com/'),
+    ])
     # loop = asyncio.get_event_loop()
     # tasks = [wget(host) for host in ['www.sina.com.cn', 'www.sohu.com', 'www.163.com']]
     # loop.run_until_complete(asyncio.wait(tasks))
@@ -183,5 +196,5 @@ if __name__ == "__main__":
     # buf = f.read()
     # print(buf)
     # f.close()
-    unittest.main()
+    # unittest.main()
     pass
